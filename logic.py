@@ -1,5 +1,5 @@
 # -----------------------------------------------------------
-# 파일명: logic.py (구글 API 탑재 완료)
+# 파일명: logic.py (번역 기능 + 구글 비전 완벽 탑재)
 # -----------------------------------------------------------
 import os
 import csv
@@ -8,6 +8,7 @@ import base64
 import requests
 import streamlit as st
 from datetime import datetime
+from deep_translator import GoogleTranslator # 번역기 가져오기
 
 RESULTS_CSV = "user_results.csv"
 
@@ -64,15 +65,13 @@ def analyze_body_shape(img_array):
     elif ratio >= 1.6: return "균형 잡힌 표준적인 비율에 가까운 체형입니다. 대부분의 기본 핏이 잘 어울릴 수 있어요."
     else: return "상체와 하체 비율이 안정적으로 느껴지는 체형입니다. 상·하의 비율을 나누는 코디가 잘 어울릴 수 있어요."
 
-# --- [핵심] 구글 비전 API 호출 함수 ---
+# --- [핵심] 구글 비전 API + 한글 번역 ---
 def get_google_vision_analysis(image_bytes):
-    # Secrets에서 키 가져오기
     try:
         api_key = st.secrets["GOOGLE_API_KEY"]
     except:
-        return {"error": "API 키 설정이 필요합니다. (Streamlit Secrets 확인)"}
+        return {"error": "API 키 설정이 필요합니다."}
 
-    # 구글로 전송
     base64_image = base64.b64encode(image_bytes).decode("utf-8")
     url = f"https://vision.googleapis.com/v1/images:annotate?key={api_key}"
     
@@ -80,9 +79,9 @@ def get_google_vision_analysis(image_bytes):
         "requests": [{
             "image": {"content": base64_image},
             "features": [
-                {"type": "WEB_DETECTION", "maxResults": 10}, # 웹에서 닮은 이미지 찾기
-                {"type": "LABEL_DETECTION", "maxResults": 5}, # 특징 찾기
-                {"type": "FACE_DETECTION", "maxResults": 5}   # 얼굴 찾기
+                {"type": "WEB_DETECTION", "maxResults": 10},
+                {"type": "LABEL_DETECTION", "maxResults": 5},
+                {"type": "FACE_DETECTION", "maxResults": 5}
             ]
         }]
     }
@@ -94,18 +93,27 @@ def get_google_vision_analysis(image_bytes):
         if "error" in result:
             return {"error": result["error"]["message"]}
             
-        # 결과 파싱
         web_detection = result["responses"][0].get("webDetection", {})
+        label_detection = result["responses"][0].get("labelAnnotations", [])
         
-        # 1. 키워드 (Entity)
-        entities = web_detection.get("webEntities", [])
-        keywords = [e.get("description") for e in entities if e.get("description")]
+        # 1. 키워드 추출 및 한글 번역
+        keywords_en = [label.get("description") for label in label_detection] # 라벨링 결과 사용
+        if not keywords_en: # 라벨 없으면 웹 엔티티 사용
+             entities = web_detection.get("webEntities", [])
+             keywords_en = [e.get("description") for e in entities if e.get("description")][:5]
         
-        # 2. 닮은 이미지 (Similar Images)
+        # 번역기 돌리기
+        try:
+            translator = GoogleTranslator(source='auto', target='ko')
+            keywords_ko = [translator.translate(k) for k in keywords_en]
+        except:
+            keywords_ko = keywords_en # 실패하면 영어 그대로
+
+        # 2. 닮은 이미지
         similar_images = web_detection.get("visuallySimilarImages", [])
         image_urls = [img.get("url") for img in similar_images]
         
-        return {"keywords": keywords, "images": image_urls}
+        return {"keywords": keywords_ko, "images": image_urls}
         
     except Exception as e:
         return {"error": str(e)}
