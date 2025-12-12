@@ -39,7 +39,7 @@ if 'page' not in st.session_state: st.session_state['page'] = 'home'
 def go_page(p): st.session_state['page'] = p
 def go_home(): st.session_state['page'] = 'home'
 
-# --- [1] 퍼스널 컬러 페이지 (완벽 유지) ---
+# --- [1] 퍼스널 컬러 페이지 ---
 def page_personal_color():
     st.markdown("<h1>퍼스널 컬러 찾기</h1>", unsafe_allow_html=True)
     st.subheader("기본 정보 입력")
@@ -216,7 +216,7 @@ def page_body_shape():
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home)
 
-# --- [3] 캐릭터 매칭 페이지 (이미지 표시 기능 추가!) ---
+# --- [3] 캐릭터 매칭 페이지 (이유 출력 추가!) ---
 def page_kids_fun():
     st.subheader("얼굴 캐릭터 매칭")
     
@@ -227,27 +227,30 @@ def page_kids_fun():
         height = st.number_input("키(cm)", key="kf_h")
     with c2:
         weight = st.number_input("몸무게(kg)", key="kf_w")
-        # 카테고리 선택 (키값만 가져옴)
         target_type = st.selectbox("어떤 느낌으로 매칭할까요?", list(KIDS_CHARACTERS.keys()))
 
     file = st.file_uploader("얼굴 사진 업로드", type=["jpg", "png"], key="kf_f")
     if file:
         st.image(file, width=300)
         if st.button("매칭하기", type="primary"):
-            # 1. 선택한 카테고리의 캐릭터 이름 목록을 가져옵니다.
+            # 1. 카테고리에서 캐릭터 목록 가져오기
             char_list = list(KIDS_CHARACTERS[target_type].keys())
-            # 2. 랜덤으로 하나 뽑습니다.
+            # 2. 랜덤 선택 (나중에 AI로 교체될 부분)
             picked_name = random.choice(char_list)
-            # 3. 뽑힌 캐릭터의 이미지 주소를 가져옵니다.
-            picked_url = KIDS_CHARACTERS[target_type][picked_name]
+            # 3. 데이터 꾸러미(이미지, 이유) 가져오기
+            picked_data = KIDS_CHARACTERS[target_type][picked_name]
+            
+            picked_img = picked_data["img"]
+            picked_reason = picked_data["reason"]
             
             st.success(f"당신의 특징을 분석한 결과...")
             time.sleep(1)
             st.balloons()
-            # 결과 텍스트 출력
+            
+            # [NEW] 결과 화면 출력 (이름 + 이유 + 사진)
             st.success(f"**{picked_name}** 와(과) 가장 닮았습니다! 🎉")
-            # [NEW] 캐릭터 이미지 출력!
-            st.image(picked_url, width=300, caption=picked_name)
+            st.info(f"💡 **분석 결과:** {picked_reason}")
+            st.image(picked_img, width=300, caption=picked_name)
             
             utils.save_result("kids_fun", name, "", gender, height, weight, picked_name)
             
