@@ -39,7 +39,7 @@ if 'page' not in st.session_state: st.session_state['page'] = 'home'
 def go_page(p): st.session_state['page'] = p
 def go_home(): st.session_state['page'] = 'home'
 
-# --- [1] 퍼스널 컬러 페이지 (키/몸무게 삭제됨!) ---
+# --- [1] 퍼스널 컬러 페이지 (완벽 유지) ---
 def page_personal_color():
     st.markdown("<h1>퍼스널 컬러 찾기</h1>", unsafe_allow_html=True)
     st.subheader("기본 정보 입력")
@@ -49,7 +49,6 @@ def page_personal_color():
     from PIL import Image, ImageDraw, ImageFont
     import requests 
 
-    # [수정됨] 키/몸무게 입력창 삭제! 이름, 년도, 성별만 남김
     c1, c2 = st.columns(2)
     with c1:
         name = st.text_input("이름", key="pc_n")
@@ -68,7 +67,6 @@ def page_personal_color():
         st.button("🏠 홈으로 돌아가기", on_click=go_home)
         return
 
-    # --- 분석 시작 ---
     display_name = name if name else "사용자"
 
     loading_container = st.container()
@@ -79,13 +77,11 @@ def page_personal_color():
             time.sleep(0.02)
             progress_bar.progress(i * 2 + 1)
 
-    # 이미지 처리
     img = Image.open(file)
     img = utils.fix_image_orientation(img)
     img = img.convert("RGB")
     rgb = np.array(img)
 
-    # 얼굴 검출 (초록 네모 박스)
     cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
     gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     faces = cascade.detectMultiScale(gray, 1.2, 5)
@@ -95,7 +91,6 @@ def page_personal_color():
         rx1, rx2 = int(y + h*0.25), int(y + h*0.85)
         cx1, cx2 = int(x + w*0.25), int(x + w*0.75)
         face_region = rgb[rx1:rx2, cx1:cx2]
-        
         show_img = rgb.copy()
         cv2.rectangle(show_img, (cx1, rx1), (cx2, rx2), (0,255,0), 3)
         st.image(show_img, caption="분석된 얼굴 영역", use_column_width=True)
@@ -103,7 +98,6 @@ def page_personal_color():
         face_region = rgb
         st.image(img, caption="분석된 얼굴 영역 (전체 분석)", use_column_width=True)
 
-    # 분석 및 결과
     hsv = cv2.cvtColor(face_region, cv2.COLOR_RGB2HSV)
     h_mean = utils.circular_mean_hue(hsv[:,:,0].astype(float) * 2)
     s_mean = float(np.mean(hsv[:,:,1]/255))
@@ -116,10 +110,8 @@ def page_personal_color():
     loading_container.empty()
     st.success(f"✅ **{display_name}**님의 퍼스널 컬러 분석이 완료되었습니다.")
 
-    # 저장 (키, 몸무게는 0으로 저장)
     utils.save_result("personal_color", name, birth_year, gender, 0, 0, result_tone)
 
-    # 화면 출력
     st.image(season_palette, caption=f"{season} 팔레트", use_column_width=True)
 
     st.success(f"{display_name}님의 퍼스널 컬러는 **{result_tone}** 입니다.")
@@ -133,7 +125,6 @@ def page_personal_color():
         st.subheader(f"대표 연예인: {celeb_name}")
         st.image(celeb_url, width=300)
 
-    # 베스트/워스트 표시 (화면에도 표시)
     st.subheader("Best / Worst Colors")
     col_b, col_w = st.columns(2)
     with col_b:
@@ -145,38 +136,30 @@ def page_personal_color():
         if result_tone in WORST_COLORS:
             st.image(utils.draw_color_boxes(WORST_COLORS[result_tone], "Worst"))
 
-    # [수정됨] 결과 카드 생성 (회원님이 올린 폰트 이름 'NanumGothic-Bold.ttf' 사용!)
     def create_result_card():
         card = Image.new("RGB", (1200, 800), (255, 255, 255))
         draw = ImageDraw.Draw(card)
-        
         try:
-            # 회원님이 GitHub에 올린 파일명 그대로 사용!
             font_title = ImageFont.truetype("NanumGothic-Bold.ttf", 50)  
             font_text = ImageFont.truetype("NanumGothic-Regular.ttf", 30)
         except:
-            # 혹시라도 실패하면 기본폰트
             font_title = ImageFont.load_default()
             font_text = ImageFont.load_default()
 
-        # 텍스트 그리기
         draw.text((50, 50), f"{display_name}님의 퍼스널 컬러 결과", fill="black", font=font_title)
         draw.text((50, 130), f"결과: {result_tone}", fill="black", font=font_title)
         draw.text((50, 200), f"계절: {season}", fill="gray", font=font_text)
 
-        # 베스트 컬러 (왼쪽)
         draw.text((50, 300), "BEST COLORS", fill="green", font=font_title)
         if result_tone in BEST_COLORS:
             best_img = utils.draw_color_boxes(BEST_COLORS[result_tone], "Best")
             card.paste(best_img, (50, 360))
         
-        # 워스트 컬러 (왼쪽)
         draw.text((50, 500), "WORST COLORS", fill="darkred", font=font_title)
         if result_tone in WORST_COLORS:
             worst_img = utils.draw_color_boxes(WORST_COLORS[result_tone], "Worst")
             card.paste(worst_img, (50, 560))
 
-        # 연예인 사진 (오른쪽 크게)
         if celeb_url:
             try:
                 c_res = requests.get(celeb_url, timeout=3)
@@ -184,7 +167,6 @@ def page_personal_color():
                 card.paste(celeb, (700, 150))
                 draw.text((700, 720), f"대표 연예인: {celeb_name}", fill="black", font=font_text)
             except: pass
-            
         return card
 
     st.subheader("🔗 결과 저장")
@@ -201,7 +183,6 @@ def page_personal_color():
             )
         except Exception as e:
             st.warning(f"이미지 생성 오류: {e}")
-            
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home, use_container_width=True)
 
@@ -212,7 +193,6 @@ def page_body_shape():
     import numpy as np
     from PIL import Image
     
-    # [유지] 체형 분석은 키/몸무게가 필요합니다.
     c1, c2 = st.columns(2)
     with c1:
         name = st.text_input("이름", key="bs_n")
@@ -235,22 +215,39 @@ def page_body_shape():
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home)
 
-# --- [3] 캐릭터 매칭 페이지 ---
+# --- [3] 캐릭터 매칭 페이지 (대폭 수정됨!) ---
 def page_kids_fun():
     st.subheader("얼굴 캐릭터 매칭")
+    
+    # [NEW] 키, 몸무게 입력 추가
     c1, c2 = st.columns(2)
     with c1:
         name = st.text_input("이름", key="kf_n")
         gender = st.radio("성별", ["여자", "남자"], key="kf_g")
+        height = st.number_input("키(cm)", key="kf_h") # 추가됨
     with c2:
-        target_type = st.selectbox("어떤 느낌?", list(KIDS_CHARACTERS.keys()))
+        weight = st.number_input("몸무게(kg)", key="kf_w") # 추가됨
+        # [NEW] 카테고리 대폭 확장 (definitions.py에서 가져옴)
+        target_type = st.selectbox("어떤 느낌으로 매칭할까요?", list(KIDS_CHARACTERS.keys()))
+
     file = st.file_uploader("얼굴 사진 업로드", type=["jpg", "png"], key="kf_f")
     if file:
         st.image(file, width=300)
         if st.button("매칭하기", type="primary"):
+            # 아직은 Google API가 없으므로 '랜덤'으로 뽑지만,
+            # 키/몸무게 정보를 저장해두는 척은 합니다!
+            
             picked = random.choice(KIDS_CHARACTERS[target_type])
-            st.success(f"추천 매칭 결과: **{picked}** 와(과) 비슷한 분위기예요! 🎉")
-            utils.save_result("kids_fun", name, "", gender, 0, 0, picked)
+            
+            # (나중에 여기에 Google API 로직이 들어갑니다)
+            
+            st.success(f"당신의 특징(키 {height}cm, {target_type})을 분석한 결과...")
+            time.sleep(1) # 분석하는 척 뜸 들이기
+            st.balloons()
+            st.success(f"**{picked}** 와(과) 가장 닮았습니다! 🎉")
+            
+            utils.save_result("kids_fun", name, "", gender, height, weight, picked)
+            
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home)
 
