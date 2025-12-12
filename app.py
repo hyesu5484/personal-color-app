@@ -26,10 +26,10 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 # 2. 로직/데이터 연결
 try:
     import logic as utils 
-    # [수정] image_filter 추가됨!
+    # definitions.py에서 필요한 데이터 가져오기
     from data.definitions import (
         SEASON_PALETTE, TONE_INFO, KIDS_CHARACTERS, DEFAULT_PALETTE, 
-        CELEB, BEST_COLORS, WORST_COLORS, image_filter
+        CELEB, BEST_COLORS, WORST_COLORS
     )
 except ImportError:
     st.error("필수 파일(logic.py 또는 data/definitions.py)이 없습니다.")
@@ -240,7 +240,7 @@ def page_kids_fun():
                 # 1. 이미지를 바이트로 변환
                 img_bytes = file.getvalue()
                 
-                # 2. 구글 비전 API 호출 (진짜 뇌!)
+                # 2. 구글 비전 API 호출
                 api_result = utils.get_google_vision_analysis(img_bytes)
                 
                 # 3. 결과 처리
@@ -248,28 +248,30 @@ def page_kids_fun():
                     st.error(f"분석 중 오류 발생: {api_result['error']}")
                     st.warning("⚠️ 혹시 API 키를 Streamlit Secrets에 넣는 걸 깜빡하셨나요?")
                 else:
-                    # 키워드 보여주기
+                    # 데이터 가져오기
                     keywords = api_result.get("keywords", [])
                     images = api_result.get("images", [])
                     
                     # -------------------------------------------------------------
-                    # [필터링 로직 추가] 타요가 나오면 다른 사진 제거!
+                    # [긴급 수정] 타요 강력 필터링 (순위 상관없이 타요 있으면 무조건 발동)
                     # -------------------------------------------------------------
-                    if keywords:
-                         # 1등 키워드를 필터에 넣어봅니다. (점수는 임의로 1.0 부여)
-                         dummy_data = [{'name': k, 'score': 1.0 - (i*0.1)} for i, k in enumerate(keywords)]
-                         
-                         # image_filter가 작동하여 타요만 남기면 리스트 길이가 1이 됨
-                         filtered_res = image_filter.process_results(dummy_data)
-                         
-                         if len(filtered_res) == 1:
-                             target_name = filtered_res[0]['name']
-                             st.success(f"🚌 **{target_name}** 발견! 관련 없는 이미지는 자동으로 숨깁니다.")
-                             
-                             # 키워드도 타요만 남기고, 이미지도 1등(타요)만 남김
-                             keywords = [target_name]
-                             if images:
-                                 images = [images[0]]
+                    target_keywords = ["tayo", "타요", "little bus"]
+                    is_tayo_found = False
+                    
+                    # AI가 찾은 모든 키워드를 하나씩 검사
+                    for k in keywords:
+                        for target in target_keywords:
+                            if target in k.lower(): # 대소문자 무시하고 포함 여부 확인
+                                is_tayo_found = True
+                                break
+                        if is_tayo_found: break
+
+                    if is_tayo_found and len(images) > 0:
+                         st.success("🚌 **타요(Tayo)**가 감지되었습니다! 정확한 결과를 위해 관련 없는 이미지는 숨깁니다.")
+                         # 이미지를 무조건 1개만 남김
+                         images = [images[0]]
+                         # 키워드도 타요 위주로 정리
+                         keywords = ["꼬마버스 타요 (The Little Bus Tayo)"] + [k for k in keywords if "bus" in k.lower() or "tayo" in k.lower()]
                     # -------------------------------------------------------------
 
                     st.success("✅ 분석 완료!")
@@ -289,7 +291,7 @@ def page_kids_fun():
                     else:
                         st.info("비슷한 이미지를 찾지 못했습니다.")
                     
-                    # 4. (보너스) 우리가 만든 카테고리 매칭도 재미로 보여줌
+                    # 4. (보너스) 내맘대로 매칭
                     st.divider()
                     st.markdown("#### 🎁 보너스: 내맘대로 매칭")
                     char_list = list(KIDS_CHARACTERS[target_type].keys())
