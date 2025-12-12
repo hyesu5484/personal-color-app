@@ -39,7 +39,7 @@ if 'page' not in st.session_state: st.session_state['page'] = 'home'
 def go_page(p): st.session_state['page'] = p
 def go_home(): st.session_state['page'] = 'home'
 
-# --- [1] 퍼스널 컬러 페이지 (키/몸무게 삭제됨) ---
+# --- [1] 퍼스널 컬러 페이지 ---
 def page_personal_color():
     st.markdown("<h1>퍼스널 컬러 찾기</h1>", unsafe_allow_html=True)
     st.subheader("기본 정보 입력")
@@ -49,15 +49,15 @@ def page_personal_color():
     from PIL import Image, ImageDraw, ImageFont
     import requests 
 
-    # [수정됨] 입력 폼 간소화 (키, 몸무게 삭제)
-    c1, c2 = st.columns(2)
-    with c1:
+    col1, col2 = st.columns(2)
+    with col1:
         name = st.text_input("이름", key="pc_n")
         years = ["선택"] + [f"{y}년생" for y in range(2025, 1930, -1)]
         birth_year = st.selectbox("출생연도", years, index=0, key="pc_y")
-    with c2:
-        # 성별을 오른쪽으로 배치
         gender = st.radio("성별", ["여자", "남자"], key="pc_g")
+    with col2:
+        height = st.number_input("키(cm)", min_value=0, max_value=250, value=0, key="pc_h")
+        weight = st.number_input("몸무게(kg)", min_value=0, max_value=200, value=0, key="pc_w")
 
     st.divider()
     st.subheader("사진 업로드")
@@ -116,8 +116,7 @@ def page_personal_color():
     loading_container.empty()
     st.success(f"✅ **{display_name}**님의 퍼스널 컬러 분석이 완료되었습니다.")
 
-    # [수정됨] 저장 시 키/몸무게 자리에 0을 넣음 (에러 방지)
-    utils.save_result("personal_color", name, birth_year, gender, 0, 0, result_tone)
+    utils.save_result("personal_color", name, birth_year, gender, height, weight, result_tone)
 
     # 화면 출력
     st.image(season_palette, caption=f"{season} 팔레트", use_column_width=True)
@@ -145,27 +144,35 @@ def page_personal_color():
         if result_tone in WORST_COLORS:
             st.image(utils.draw_color_boxes(WORST_COLORS[result_tone], "Worst"))
 
-    # 결과 카드 생성
+    # [수정됨] 결과 카드 생성 (나눔고딕 적용 + 원본 배치 복구)
     def create_result_card():
+        # 1. 캔버스 생성 (원본 사이즈 1200x700)
         card = Image.new("RGB", (1200, 700), (255, 255, 255))
         draw = ImageDraw.Draw(card)
+        
+        # 2. 폰트 로딩 (업로드한 NanumGothic.ttf 사용)
         try:
+            # GitHub에 올린 파일명과 똑같아야 합니다!
             font_title = ImageFont.truetype("NanumGothic.ttf", 48)
             font_text = ImageFont.truetype("NanumGothic.ttf", 32)
         except:
+            # 폰트 파일 없으면 기본 폰트 (깨질 수 있음)
             font_title = ImageFont.load_default()
             font_text = ImageFont.load_default()
 
+        # 3. 텍스트 그리기 (원본 좌표)
         draw.text((50, 40), f"{display_name}님의 퍼스널 컬러", fill="black", font=font_title)
         draw.text((50, 120), f"결과: {result_tone}", fill="#333333", font=font_text)
         draw.text((50, 170), f"톤 구분: {season}", fill="#333333", font=font_text)
 
+        # 4. 팔레트 이미지 붙여넣기 (원본 좌표 50, 230)
         try:
             p_res = requests.get(season_palette, timeout=3)
             palette_img = Image.open(io.BytesIO(p_res.content)).resize((500, 250))
             card.paste(palette_img, (50, 230))
         except: pass
 
+        # 5. 베스트/워스트 컬러 (원본 좌표)
         draw.text((50, 470), "Best colors", fill="green", font=font_text)
         if result_tone in BEST_COLORS:
             best_img = utils.draw_color_boxes(BEST_COLORS[result_tone], "Best")
@@ -176,6 +183,7 @@ def page_personal_color():
             worst_img = utils.draw_color_boxes(WORST_COLORS[result_tone], "Worst")
             card.paste(worst_img, (50, 620))
 
+        # 6. 연예인 사진 (원본 좌표 800, 170)
         if celeb_url:
             try:
                 c_res = requests.get(celeb_url, timeout=3)
@@ -210,8 +218,6 @@ def page_body_shape():
     st.markdown("※ 전신이 나오도록 촬영한 사진을 업로드해주세요.")
     import numpy as np
     from PIL import Image
-    
-    # [유지] 여기는 키/몸무게가 필요합니다.
     c1, c2 = st.columns(2)
     with c1:
         name = st.text_input("이름", key="bs_n")
@@ -219,7 +225,6 @@ def page_body_shape():
     with c2:
         height = st.number_input("키(cm)", key="bs_h")
         weight = st.number_input("몸무게(kg)", key="bs_w")
-        
     file = st.file_uploader("전신 사진 업로드", type=["jpg", "png"], key="bs_f")
     if file:
         img = Image.open(file)
