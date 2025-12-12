@@ -162,3 +162,48 @@ class ImageFilterService:
 # [사용 편의성] 외부에서 바로 사용할 수 있도록 객체 생성
 # ---------------------------------------------------------
 image_filter = ImageFilterService()
+# data/definitions.py (수정 버전)
+
+# ... (위쪽 데이터는 그대로 두세요) ...
+
+class ImageFilterService:
+    SPECIAL_CHARACTERS = ["Tayo", "타요", "The Little Bus", "Little Bus Tayo"]
+
+    def process_results(self, results):
+        print(f"DEBUG: 필터링 전 데이터 개수: {len(results)}") # 확인용 로그
+        if not results:
+            return []
+
+        # 1. 데이터 형태 정규화 (딕셔너리든 객체든 'score'와 'name'을 뽑아냄)
+        refined_list = []
+        for item in results:
+            # 딕셔너리인 경우 vs 객체(속성)인 경우 모두 처리
+            score = getattr(item, 'score', None) or item.get('score') or 0
+            name = getattr(item, 'description', None) or item.get('description') or \
+                   getattr(item, 'name', None) or item.get('name') or \
+                   getattr(item, 'label', None) or item.get('label') or ""
+            
+            # 다루기 쉽게 딕셔너리로 변환해서 저장
+            refined_list.append({'name': name, 'score': score, 'original': item})
+
+        # 2. 점수순 정렬
+        sorted_results = sorted(refined_list, key=lambda x: x['score'], reverse=True)
+        top_match = sorted_results[0]
+        
+        print(f"DEBUG: 1순위 감지 결과: {top_match['name']} (점수: {top_match['score']})") # 확인용 로그
+
+        # 3. 타요 필터링 로직
+        if self._is_target_character(top_match['name']):
+            print("DEBUG: 타요 감지됨! 단독 노출 처리합니다.")
+            # 원본 객체 형태를 유지해서 반환
+            return [top_match['original']]
+        
+        print("DEBUG: 타요 아님. 전체 결과 반환.")
+        # 원본 객체 리스트 반환
+        return [item['original'] for item in sorted_results]
+
+    def _is_target_character(self, name):
+        if not name: return False
+        return any(keyword.lower() in name.lower() for keyword in self.SPECIAL_CHARACTERS)
+
+image_filter = ImageFilterService()
