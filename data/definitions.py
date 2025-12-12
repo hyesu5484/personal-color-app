@@ -1,23 +1,22 @@
 # -----------------------------------------------------------
 # 파일 경로: data/definitions.py
-# 설명: 프로그램에서 사용하는 고정된 데이터(텍스트, URL, 색상값)를 모아둔 창고입니다.
+# 설명: 데이터 창고 (캐릭터 대폭 추가!)
 # -----------------------------------------------------------
 
-# 톤 설명
+# 톤 설명 사전
 TONE_INFO = {
-    "봄 라이트": "고명도의 밝은 느낌이지만 저채도의 파스텔톤이 잘 어울려요. 복숭아·코랄·살구처럼 맑고 연한 립을 바르면 얼굴이 따뜻하고 청순하게 보입니다.",
-    "봄 브라이트": "고채도의 따뜻하고 발랄한 느낌, 고명도의 밝고 쨍한 컬러가 잘 어울려요. 봄처럼 화사하게 피어나는 인상이 강해서 ‘봄의 정석’이라고도 불려요.",
-    "여름 라이트": "고명도의 밝고 은은한 파스텔톤이 잘 어울려요. 싱그럽고 투명한 느낌이 있고, 봄 라이트보다 흰 기가 조금 더 많아요.",
-    "여름 브라이트": "고명도·고채도 계열이라 채도가 높은 원색 계열도 잘 받아요. 쨍한 여름 컬러가 잘 어울립니다.",
-    "여름 뮤트": "탁기가 있는 톤다운 파스텔 계열이 어울려요. 자연스럽고 부드러운 느낌이 특징입니다.",
-    "가을 뮤트": "톤 다운된 따뜻한 브라운·카키·올리브 계열이 잘 어울려요. 분위기 있고 고급스러운 인상을 줍니다.",
-    "가을 스트롱": "중명도·고채도 웜톤이 잘 어울려요. 테라코타·머스타드처럼 선명한 색이 잘 받습니다.",
-    "가을 딥": "저명도의 어둡고 깊이 있는 컬러가 잘 어울려요. 버건디·다크브라운 계열이 찰떡입니다.",
-    "겨울 브라이트": "고채도의 비비드한 쿨톤이 잘 어울려요. 선명한 푸시아·코발트 블루가 잘 받습니다.",
-    "겨울 딥": "저명도·저채도의 어두운 쿨톤이 어울려요. 블랙 계열이 가장 잘 어울리는 타입입니다.",
+    "봄 라이트": "고명도의 밝은 느낌이지만 저채도의 파스텔톤이 잘 어울려요.",
+    "봄 브라이트": "고채도의 따뜻하고 발랄한 느낌, 고명도의 밝고 쨍한 컬러가 잘 어울려요.",
+    "여름 라이트": "고명도의 밝고 은은한 파스텔톤이 잘 어울려요.",
+    "여름 브라이트": "고명도·고채도 계열이라 채도가 높은 원색 계열도 잘 받아요.",
+    "여름 뮤트": "탁기가 있는 톤다운 파스텔 계열이 어울려요.",
+    "가을 뮤트": "톤 다운된 따뜻한 브라운·카키·올리브 계열이 잘 어울려요.",
+    "가을 스트롱": "중명도·고채도 웜톤이 잘 어울려요.",
+    "가을 딥": "저명도의 어둡고 깊이 있는 컬러가 잘 어울려요.",
+    "겨울 브라이트": "고채도의 비비드한 쿨톤이 잘 어울려요.",
+    "겨울 딥": "저명도·저채도의 어두운 쿨톤이 어울려요."
 }
 
-# 시즌 팔레트 이미지 URL
 SEASON_PALETTE = {
     "봄": "https://cdn.jsdelivr.net/gh/thesimplegithub/mycolor-hosting/images/pccs_봄.png",
     "여름": "https://cdn.jsdelivr.net/gh/thesimplegithub/mycolor-hosting/images/pccs_여름.png",
@@ -26,21 +25,19 @@ SEASON_PALETTE = {
 }
 DEFAULT_PALETTE = "https://cdn.jsdelivr.net/gh/thesimplegithub/mycolor-hosting/images/pccsMain.png"
 
-# 연예인 데이터 (app.py에 있던 내용 전체 이동)
 CELEB = {
-    "봄 라이트": {
-        "여자": ("윤아", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTM1/MDAxNzYyNDM5MzA3NDI1.T2rxWI6y8G0KOX-pdK4BcAXgCEUl-2UUOHU9WVgtZCMg.uI3ecF_zdMm_guc5BmRIwcZldTBYdPBzu3u5rqqj2J8g.JPEG/IMG％EF％BC％BF1192.JPG?type=w966"),
-        "남자": ("이종석", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNzUg/MDAxNzYyNDM5MzA4MzU2.sgx5YYgOJeH6tIQ-dfmq6Zt-u_LoLhWvFeNpUvvnHhEg.3Mwa48B-biz1QudsFRHSsLPkcuXJJIkbHWwf-aYegiAg.JPEG/IMG％EF％BC％BF1225.JPG?type=w966")
-    },
-    "봄 브라이트": {
-        "여자": ("나연", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjAz/MDAxNzYyNDM5MzA3Nzk1.gmEqXNzB37B2wBTgrVx4w6JDMlcaCNtqIFSnr5T8UCwg.VjDPhKIS95U1AB33R8KfuleDxyRQ_ZB9CZefvdTNSpsg.JPEG/IMG％EF％BC％BF1206.JPG?type=w966"),
-        "남자": ("강다니엘", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjY1/MDAxNzYyNDM5MzA4MjU3.f0OZ-_VnhEI33cm0IcEuUITdmX6X8HORMrUzWCv1d7Ug.8iSY5eGRrAfNUEhvH0KehClXPBPUKeKnZEF79olvxNYg.JPEG/IMG％EF％BC％BF1227.JPG?type=w966")
-    },
-    # ... (나머지 연예인 데이터도 여기에 그대로 붙여넣기 해주세요) ...
-    # 지면상 생략했지만, app.py의 CELEB 전체를 여기에 넣습니다.
+    "봄 라이트": {"여자": ("윤아", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTM1/MDAxNzYyNDM5MzA3NDI1.T2rxWI6y8G0KOX-pdK4BcAXgCEUl-2UUOHU9WVgtZCMg.uI3ecF_zdMm_guc5BmRIwcZldTBYdPBzu3u5rqqj2J8g.JPEG/IMG％EF％BC％BF1192.JPG?type=w966"), "남자": ("이종석", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNzUg/MDAxNzYyNDM5MzA4MzU2.sgx5YYgOJeH6tIQ-dfmq6Zt-u_LoLhWvFeNpUvvnHhEg.3Mwa48B-biz1QudsFRHSsLPkcuXJJIkbHWwf-aYegiAg.JPEG/IMG％EF％BC％BF1225.JPG?type=w966")},
+    "봄 브라이트": {"여자": ("나연", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjAz/MDAxNzYyNDM5MzA3Nzk1.gmEqXNzB37B2wBTgrVx4w6JDMlcaCNtqIFSnr5T8UCwg.VjDPhKIS95U1AB33R8KfuleDxyRQ_ZB9CZefvdTNSpsg.JPEG/IMG％EF％BC％BF1206.JPG?type=w966"), "남자": ("강다니엘", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjY1/MDAxNzYyNDM5MzA4MjU3.f0OZ-_VnhEI33cm0IcEuUITdmX6X8HORMrUzWCv1d7Ug.8iSY5eGRrAfNUEhvH0KehClXPBPUKeKnZEF79olvxNYg.JPEG/IMG％EF％BC％BF1227.JPG?type=w966")},
+    "여름 라이트": {"여자": ("장원영", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjc1/MDAxNzYyNDM5MzA4MTQ5.ewVz5OQExgMd60ij3x5v1IJTSFIpA9syFeb7_hi3I1kg.ZV73W-Lvr8U2bh-C31jX_kZjdKvcrkNGkw9bhsDHesgg.JPEG/IMG％EF％BC％BF1222.JPG?type=w966"), "남자": ("정해인", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNTMg/MDAxNzYyNDM5MzA3Nzgz.GO7RDL060ifLkDNT0xixz1kD9tHebrfG1ONvQhfmU8sg.321vBWpCBZuZGURaIJM69c0KWgwYMGBsPSuHsNbgaYcg.JPEG/IMG％EF％BC％BF1230.JPG?type=w966")},
+    "여름 브라이트": {"여자": ("은하", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTc1/MDAxNzYyNDM5MzA4OTk3.XyRCgDMBrhObmZydV-7E8XWWBytUp7_7ta2l3XREYOUg.MrkWtbrcCdX0wZ3g-xKerOWoAVDJot8wEe3j7E45T_Mg.JPEG/IMG％EF％BC％BF1224.JPG?type=w966"), "남자": ("뷔", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTYz/MDAxNzYyNDM5MzA4NDE1.NA54xC6oQosEfDWvfgmvnltIvdpYa_Z9klksZELld6wg.J262fp66ywuKByMfaaYNFqFPSZKQu89N0QSEA8GuLuog.JPEG/IMG％EF％BC％BF1236.JPG?type=w966")},
+    "여름 뮤트": {"여자": ("문채원", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjgg/MDAxNzYyNDM5MzA3NDg0.YIstb7sU0wswDpygeoQIMwVh9vVkMuhrI41ndLMqPkIg.HHcvHaCoKnMGbQ7irGsYEe6PEtDV5ye2Nc53GC5a5Iwg.JPEG/IMG％EF％BC％BF1198.JPG?type=w966"), "남자": ("송강", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjYw/MDAxNzYyNDM5MzA4OTIz.vBmWxVKj7Dco3PTkrigIXG3R2N_Dj-4QVpQtFiE_-q4g.GVzu4Lw-QZTCjKe_GHcupZ6TEmKAPRkXN0ihWi1kBPMg.JPEG/IMG％EF％BC％BF1201.JPG?type=w966")},
+    "가을 뮤트": {"여자": ("제니", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfODYg/MDAxNzYyNDM5MzA3OTA1.NLvRSbc3iZzDH_aKTbQfBBovpza2OvEFEOgZcXubatwg.Kfs2Empot5CsxTb_nCOJz4_VWHB53mDVkfRTtvFqBB8g.JPEG/IMG％EF％BC％BF1221.JPG?type=w966"), "남자": ("서강준", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNDYg/MDAxNzYyNDM5MzA3NDQ6.EVmfObIqUCqbIgkLv0mcIHQsTIljnLb2gdRXGitKdnog.FeE4c0NscxPFePQ4Qhj6LUGsvQPE6y2TrkX8Qc3HThIg.JPEG/IMG％EF％BC％BF1237.JPG?type=w966")},
+    "가을 스트롱": {"여자": ("조이", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjE1/MDAxNzYyNDM5MzA8NTE2.AGNHRbZMl93a6NwjTt76N9EBBZ8rzVZTEbt3mn5-BRYg.CCSBsMGuO3E4BfInjwoNWn6fAl85PhNn-kWRgPC6p1Qg.JPEG/output％EF％BC％BF3817396647.jpg?type=w966"), "남자": ("강태오", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjY6/MDAxNzYyNDM5MzA7NDg7.nM3UvJAe4uPo3Pc1HT40vYbzRk7cCefKLFUZRpBjOHcg.22tuUdmI-mklIm793R8Sw0smpnqebyt5QgHzu0kUK0Eg.JPEG/output％EF％BC％BF2543490798.jpg?type=w966")},
+    "가을 딥": {"여자": ("김유정", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNiAg/MDAxNzYyNDM5MzA8OTg6.SLp61r-OMfbkn0euIMLhk2o2ZYGANT9fKoHE2S5B6lAg.umJC53HxGvx0kDdsZEL6jeZD5gLfuWPy9A3ce9tgIfAg.JPEG/IMG％EF％BC％BF1212.JPG?type=w966"), "남자": ("공유", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTU1/MDAxNzYyNDM5MzA8Nzk8.xN33tfvJjPbOHU13TZhzBf8FM0G1yCLp2oFSSHGyqZAg.3mlA7xcK21r6p7rdfl1UXf1fr_8nkjVi0h6rzeaGvH0g.JPEG/IMG％EF％BC％BF1238.JPG?type=w966")},
+    "겨울 브라이트": {"여자": ("카리나", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjkg/MDAxNzYyNDM5MzA7N7I0.vmX-1402X4TAKcSD1DtyrGBqAbFDBsYS5GottDNPMj0g.xsjf_Hcyax48NNMp_VhE10ICNjCLPbcDMK3GFSIYroUg.JPEG/IMG％EF％BC％BF1217.JPG?type=w966"), "남자": ("조정석", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTY6/MDAxNzYyNDM5MzA5MTI4.-ohQnzHZ8xK8fnjgWQU1wg9Yxcr0tJwxy6CrV10Hpl4g.wmGPYOHyE-c7Fgh60uye6fuSujLGUcQ4BSMQJRR7PP0g.JPEG/IMG％EF％BC％BF1244.JPG?type=w966")},
+    "겨울 딥": {"여자": ("지수", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTIz/MDAxNzYyNDM5MzA4OTM4.3sc7OS-eHnjtSQ-8JRgjVFVDxzGihBNxhKqgZtZifdcg.sG6vJqOREgXxvXQeD7Acb9LEzxSYM98r7PoElLlgQpUg.JPEG/IMG％EF％BC％BF1209.JPG?type=w966"), "남자": ("이수혁", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjc0/MDAxNzYyNDM5MzA8ODM7._qzsWliOJ9QxBy8Co8KdQOwR6oj8l7ePdot8o99kx2gg.jvtnAbBjBxUajgXjAQSJkNqinB8Eibdfu5DMcTdAt4cg.JPEG/IMG％EF％BC％BF1231.JPG?type=w966")},
 }
 
-# Best 색상칩
 BEST_COLORS = {
     "봄 라이트": [(255, 229, 204), (255, 205, 178), (255, 183, 197)],
     "봄 브라이트": [(255, 85, 125), (255, 180, 60), (255, 135, 0)],
@@ -54,7 +51,6 @@ BEST_COLORS = {
     "겨울 딥": [(30, 20, 50), (60, 0, 90), (0, 0, 0)]
 }
 
-# Worst 색상칩
 WORST_COLORS = {
     "봄 라이트": [(120, 120, 120), (0, 0, 0), (50, 50, 150)],
     "봄 브라이트": [(150, 150, 150), (50, 50, 180), (0, 0, 70)],
@@ -68,9 +64,11 @@ WORST_COLORS = {
     "겨울 딥": [(255, 235, 205), (255, 240, 220), (200, 180, 150)],
 }
 
-# 아이용 캐릭터 매칭 데이터
+# [NEW] 캐릭터 매칭 데이터 (대폭 확장!)
 KIDS_CHARACTERS = {
-    "사람 캐릭터": ["스폰지밥", "도라에몽 속 노진구", "짱구", "엘사(겨울왕국)", "안나(겨울왕국)"],
-    "동물 캐릭터": ["푸우(곰돌이 푸)", "톰(톰과 제리)", "주토피아 주디", "라이온킹 심바"],
-    "연예인": ["아이유", "유재석", "정국", "장원영", "카리나"],
+    "한국 애니메이션": ["뽀로로 (안경 쓴 귀요미)", "루피 (잔망루피)", "크롱", "타요", "자두 (안녕 자두야)", "둘리"],
+    "일본 애니메이션": ["루피 (원피스)", "나루토", "피카츄", "토토로", "하울 (하울의 움직이는 성)", "코난", "아냐 (스파이패밀리)"],
+    "미국 애니메이션 (디즈니/픽사)": ["엘사 (겨울왕국)", "우디 (토이스토리)", "버즈 (토이스토리)", "미키마우스", "심바 (라이온킹)", "라푼젤"],
+    "동물상": ["강아지상", "고양이상", "여우상", "토끼상", "곰상", "공룡상"],
+    "연예인 닮은꼴": ["아이유", "수지", "차은우", "송강", "제니", "박보검"],
 }
