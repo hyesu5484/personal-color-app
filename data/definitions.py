@@ -1,9 +1,9 @@
 # -----------------------------------------------------------
 # 파일 경로: data/definitions.py
-# 설명: 데이터 창고 (캐릭터 대폭 추가!)
+# 설명: 데이터 창고 (캐릭터 이미지 연결 구조로 변경!)
 # -----------------------------------------------------------
 
-# 톤 설명 사전
+# 톤 설명 사전 (그대로 유지)
 TONE_INFO = {
     "봄 라이트": "고명도의 밝은 느낌이지만 저채도의 파스텔톤이 잘 어울려요.",
     "봄 브라이트": "고채도의 따뜻하고 발랄한 느낌, 고명도의 밝고 쨍한 컬러가 잘 어울려요.",
@@ -34,41 +34,4 @@ CELEB = {
     "가을 뮤트": {"여자": ("제니", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfODYg/MDAxNzYyNDM5MzA3OTA1.NLvRSbc3iZzDH_aKTbQfBBovpza2OvEFEOgZcXubatwg.Kfs2Empot5CsxTb_nCOJz4_VWHB53mDVkfRTtvFqBB8g.JPEG/IMG％EF％BC％BF1221.JPG?type=w966"), "남자": ("서강준", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNDYg/MDAxNzYyNDM5MzA3NDQ6.EVmfObIqUCqbIgkLv0mcIHQsTIljnLb2gdRXGitKdnog.FeE4c0NscxPFePQ4Qhj6LUGsvQPE6y2TrkX8Qc3HThIg.JPEG/IMG％EF％BC％BF1237.JPG?type=w966")},
     "가을 스트롱": {"여자": ("조이", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjE1/MDAxNzYyNDM5MzA8NTE2.AGNHRbZMl93a6NwjTt76N9EBBZ8rzVZTEbt3mn5-BRYg.CCSBsMGuO3E4BfInjwoNWn6fAl85PhNn-kWRgPC6p1Qg.JPEG/output％EF％BC％BF3817396647.jpg?type=w966"), "남자": ("강태오", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjY6/MDAxNzYyNDM5MzA7NDg7.nM3UvJAe4uPo3Pc1HT40vYbzRk7cCefKLFUZRpBjOHcg.22tuUdmI-mklIm793R8Sw0smpnqebyt5QgHzu0kUK0Eg.JPEG/output％EF％BC％BF2543490798.jpg?type=w966")},
     "가을 딥": {"여자": ("김유정", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNiAg/MDAxNzYyNDM5MzA8OTg6.SLp61r-OMfbkn0euIMLhk2o2ZYGANT9fKoHE2S5B6lAg.umJC53HxGvx0kDdsZEL6jeZD5gLfuWPy9A3ce9tgIfAg.JPEG/IMG％EF％BC％BF1212.JPG?type=w966"), "남자": ("공유", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTU1/MDAxNzYyNDM5MzA8Nzk8.xN33tfvJjPbOHU13TZhzBf8FM0G1yCLp2oFSSHGyqZAg.3mlA7xcK21r6p7rdfl1UXf1fr_8nkjVi0h6rzeaGvH0g.JPEG/IMG％EF％BC％BF1238.JPG?type=w966")},
-    "겨울 브라이트": {"여자": ("카리나", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjkg/MDAxNzYyNDM5MzA7N7I0.vmX-1402X4TAKcSD1DtyrGBqAbFDBsYS5GottDNPMj0g.xsjf_Hcyax48NNMp_VhE10ICNjCLPbcDMK3GFSIYroUg.JPEG/IMG％EF％BC％BF1217.JPG?type=w966"), "남자": ("조정석", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTY6/MDAxNzYyNDM5MzA5MTI4.-ohQnzHZ8xK8fnjgWQU1wg9Yxcr0tJwxy6CrV10Hpl4g.wmGPYOHyE-c7Fgh60uye6fuSujLGUcQ4BSMQJRR7PP0g.JPEG/IMG％EF％BC％BF1244.JPG?type=w966")},
-    "겨울 딥": {"여자": ("지수", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTIz/MDAxNzYyNDM5MzA4OTM4.3sc7OS-eHnjtSQ-8JRgjVFVDxzGihBNxhKqgZtZifdcg.sG6vJqOREgXxvXQeD7Acb9LEzxSYM98r7PoElLlgQpUg.JPEG/IMG％EF％BC％BF1209.JPG?type=w966"), "남자": ("이수혁", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjc0/MDAxNzYyNDM5MzA8ODM7._qzsWliOJ9QxBy8Co8KdQOwR6oj8l7ePdot8o99kx2gg.jvtnAbBjBxUajgXjAQSJkNqinB8Eibdfu5DMcTdAt4cg.JPEG/IMG％EF％BC％BF1231.JPG?type=w966")},
-}
-
-BEST_COLORS = {
-    "봄 라이트": [(255, 229, 204), (255, 205, 178), (255, 183, 197)],
-    "봄 브라이트": [(255, 85, 125), (255, 180, 60), (255, 135, 0)],
-    "여름 라이트": [(210, 225, 255), (245, 230, 250), (235, 240, 255)],
-    "여름 브라이트": [(60, 90, 255), (255, 70, 140), (80, 200, 255)],
-    "여름 뮤트": [(180, 185, 195), (210, 200, 215), (160, 170, 185)],
-    "가을 뮤트": [(165, 140, 120), (150, 130, 100), (180, 155, 135)],
-    "가을 스트롱": [(200, 100, 20), (160, 80, 20), (220, 130, 30)],
-    "가을 딥": [(95, 60, 45), (75, 40, 30), (120, 70, 60)],
-    "겨울 브라이트": [(40, 20, 255), (255, 30, 90), (20, 200, 255)],
-    "겨울 딥": [(30, 20, 50), (60, 0, 90), (0, 0, 0)]
-}
-
-WORST_COLORS = {
-    "봄 라이트": [(120, 120, 120), (0, 0, 0), (50, 50, 150)],
-    "봄 브라이트": [(150, 150, 150), (50, 50, 180), (0, 0, 70)],
-    "여름 라이트": [(80, 60, 40), (40, 30, 20), (0, 0, 0)],
-    "여름 브라이트": [(100, 80, 50), (40, 20, 0), (0, 0, 0)],
-    "여름 뮤트": [(240, 240, 240), (255, 255, 200), (255, 190, 200)],
-    "가을 뮤트": [(240, 240, 255), (180, 210, 255), (200, 230, 255)],
-    "가을 스트롱": [(240, 240, 240), (200, 210, 255), (180, 220, 255)],
-    "가을 딥": [(240, 240, 240), (200, 230, 255), (190, 220, 255)],
-    "겨울 브라이트": [(255, 235, 200), (255, 225, 180), (200, 180, 150)],
-    "겨울 딥": [(255, 235, 205), (255, 240, 220), (200, 180, 150)],
-}
-
-# [NEW] 캐릭터 매칭 데이터 (대폭 확장!)
-KIDS_CHARACTERS = {
-    "한국 애니메이션": ["뽀로로 (안경 쓴 귀요미)", "루피 (잔망루피)", "크롱", "타요", "자두 (안녕 자두야)", "둘리"],
-    "일본 애니메이션": ["루피 (원피스)", "나루토", "피카츄", "토토로", "하울 (하울의 움직이는 성)", "코난", "아냐 (스파이패밀리)"],
-    "미국 애니메이션 (디즈니/픽사)": ["엘사 (겨울왕국)", "우디 (토이스토리)", "버즈 (토이스토리)", "미키마우스", "심바 (라이온킹)", "라푼젤"],
-    "동물상": ["강아지상", "고양이상", "여우상", "토끼상", "곰상", "공룡상"],
-    "연예인 닮은꼴": ["아이유", "수지", "차은우", "송강", "제니", "박보검"],
-}
+    "겨울 브라이트": {"여자": ("카리나", "
