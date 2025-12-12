@@ -183,7 +183,6 @@ def page_personal_color():
             )
         except Exception as e:
             st.warning(f"이미지 생성 오류: {e}")
-            
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home, use_container_width=True)
 
@@ -216,9 +215,10 @@ def page_body_shape():
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home)
 
-# --- [3] 캐릭터 매칭 페이지 (이유 출력 추가!) ---
+# --- [3] 캐릭터 매칭 페이지 (Google API 적용!) ---
 def page_kids_fun():
     st.subheader("얼굴 캐릭터 매칭")
+    st.markdown("Google AI가 전 세계의 데이터에서 당신과 가장 닮은 이미지를 찾아줍니다!")
     
     c1, c2 = st.columns(2)
     with c1:
@@ -230,29 +230,56 @@ def page_kids_fun():
         target_type = st.selectbox("어떤 느낌으로 매칭할까요?", list(KIDS_CHARACTERS.keys()))
 
     file = st.file_uploader("얼굴 사진 업로드", type=["jpg", "png"], key="kf_f")
+    
     if file:
         st.image(file, width=300)
-        if st.button("매칭하기", type="primary"):
-            # 1. 카테고리에서 캐릭터 목록 가져오기
-            char_list = list(KIDS_CHARACTERS[target_type].keys())
-            # 2. 랜덤 선택 (나중에 AI로 교체될 부분)
-            picked_name = random.choice(char_list)
-            # 3. 데이터 꾸러미(이미지, 이유) 가져오기
-            picked_data = KIDS_CHARACTERS[target_type][picked_name]
-            
-            picked_img = picked_data["img"]
-            picked_reason = picked_data["reason"]
-            
-            st.success(f"당신의 특징을 분석한 결과...")
-            time.sleep(1)
-            st.balloons()
-            
-            # [NEW] 결과 화면 출력 (이름 + 이유 + 사진)
-            st.success(f"**{picked_name}** 와(과) 가장 닮았습니다! 🎉")
-            st.info(f"💡 **분석 결과:** {picked_reason}")
-            st.image(picked_img, width=300, caption=picked_name)
-            
-            utils.save_result("kids_fun", name, "", gender, height, weight, picked_name)
+        
+        if st.button("🔍 AI 분석 시작", type="primary"):
+            with st.spinner("Google AI가 이미지를 분석하고 있습니다... (약 5초 소요)"):
+                # 1. 이미지를 바이트로 변환
+                img_bytes = file.getvalue()
+                
+                # 2. 구글 비전 API 호출 (진짜 뇌!)
+                api_result = utils.get_google_vision_analysis(img_bytes)
+                
+                # 3. 결과 처리
+                if "error" in api_result:
+                    st.error(f"분석 중 오류 발생: {api_result['error']}")
+                    st.warning("⚠️ 혹시 API 키를 Streamlit Secrets에 넣는 걸 깜빡하셨나요?")
+                else:
+                    # 키워드 보여주기
+                    keywords = api_result.get("keywords", [])
+                    images = api_result.get("images", [])
+                    
+                    st.success("✅ 분석 완료!")
+                    
+                    st.subheader("🏷️ AI가 찾은 키워드")
+                    st.write(", ".join([f"#{k}" for k in keywords[:7]])) # 7개만 보여줌
+                    
+                    st.subheader(f"🖼️ 인터넷에서 찾은 닮은꼴 ({target_type} 등)")
+                    st.write("Google Vision이 시각적으로 가장 유사하다고 판단한 이미지들입니다.")
+                    
+                    # 갤러리 형태로 이미지 출력 (최대 6개)
+                    if images:
+                        cols = st.columns(3)
+                        for i, img_url in enumerate(images[:6]):
+                            with cols[i % 3]:
+                                st.image(img_url, use_column_width=True)
+                    else:
+                        st.info("비슷한 이미지를 찾지 못했습니다.")
+                    
+                    # 4. (보너스) 우리가 만든 카테고리 매칭도 재미로 보여줌
+                    st.divider()
+                    st.markdown("#### 🎁 보너스: 내맘대로 매칭")
+                    char_list = list(KIDS_CHARACTERS[target_type].keys())
+                    picked_name = random.choice(char_list)
+                    picked_data = KIDS_CHARACTERS[target_type][picked_name]
+                    
+                    st.info(f"우리 데이터베이스에서는 **{picked_name}** 와(과) 가장 느낌이 비슷하네요!")
+                    st.write(f"💡 이유: {picked_data['reason']}")
+                    
+                    # 저장
+                    utils.save_result("kids_fun", name, "", gender, height, weight, picked_name)
             
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home)
