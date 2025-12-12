@@ -183,6 +183,7 @@ def page_personal_color():
             )
         except Exception as e:
             st.warning(f"이미지 생성 오류: {e}")
+            
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home, use_container_width=True)
 
@@ -215,38 +216,40 @@ def page_body_shape():
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home)
 
-# --- [3] 캐릭터 매칭 페이지 (대폭 수정됨!) ---
+# --- [3] 캐릭터 매칭 페이지 (이미지 표시 기능 추가!) ---
 def page_kids_fun():
     st.subheader("얼굴 캐릭터 매칭")
     
-    # [NEW] 키, 몸무게 입력 추가
     c1, c2 = st.columns(2)
     with c1:
         name = st.text_input("이름", key="kf_n")
         gender = st.radio("성별", ["여자", "남자"], key="kf_g")
-        height = st.number_input("키(cm)", key="kf_h") # 추가됨
+        height = st.number_input("키(cm)", key="kf_h")
     with c2:
-        weight = st.number_input("몸무게(kg)", key="kf_w") # 추가됨
-        # [NEW] 카테고리 대폭 확장 (definitions.py에서 가져옴)
+        weight = st.number_input("몸무게(kg)", key="kf_w")
+        # 카테고리 선택 (키값만 가져옴)
         target_type = st.selectbox("어떤 느낌으로 매칭할까요?", list(KIDS_CHARACTERS.keys()))
 
     file = st.file_uploader("얼굴 사진 업로드", type=["jpg", "png"], key="kf_f")
     if file:
         st.image(file, width=300)
         if st.button("매칭하기", type="primary"):
-            # 아직은 Google API가 없으므로 '랜덤'으로 뽑지만,
-            # 키/몸무게 정보를 저장해두는 척은 합니다!
+            # 1. 선택한 카테고리의 캐릭터 이름 목록을 가져옵니다.
+            char_list = list(KIDS_CHARACTERS[target_type].keys())
+            # 2. 랜덤으로 하나 뽑습니다.
+            picked_name = random.choice(char_list)
+            # 3. 뽑힌 캐릭터의 이미지 주소를 가져옵니다.
+            picked_url = KIDS_CHARACTERS[target_type][picked_name]
             
-            picked = random.choice(KIDS_CHARACTERS[target_type])
-            
-            # (나중에 여기에 Google API 로직이 들어갑니다)
-            
-            st.success(f"당신의 특징(키 {height}cm, {target_type})을 분석한 결과...")
-            time.sleep(1) # 분석하는 척 뜸 들이기
+            st.success(f"당신의 특징을 분석한 결과...")
+            time.sleep(1)
             st.balloons()
-            st.success(f"**{picked}** 와(과) 가장 닮았습니다! 🎉")
+            # 결과 텍스트 출력
+            st.success(f"**{picked_name}** 와(과) 가장 닮았습니다! 🎉")
+            # [NEW] 캐릭터 이미지 출력!
+            st.image(picked_url, width=300, caption=picked_name)
             
-            utils.save_result("kids_fun", name, "", gender, height, weight, picked)
+            utils.save_result("kids_fun", name, "", gender, height, weight, picked_name)
             
     st.divider()
     st.button("🏠 홈으로 돌아가기", on_click=go_home)
