@@ -1,9 +1,12 @@
 # -----------------------------------------------------------
 # 파일 경로: data/definitions.py
-# 설명: 데이터 창고 (이미지 링크 차단 없는 '안전한 주소' 버전)
+# 설명: 데이터 창고 & 이미지 필터링 로직 통합 (제출용)
 # -----------------------------------------------------------
 
-# [기존 퍼스널 컬러 데이터는 유지]
+# ==========================================================
+# 1. 퍼스널 컬러 및 연예인 데이터 (기존 데이터 유지)
+# ==========================================================
+
 TONE_INFO = {
     "봄 라이트": "고명도의 밝은 느낌이지만 저채도의 파스텔톤이 잘 어울려요.",
     "봄 브라이트": "고채도의 따뜻하고 발랄한 느낌, 고명도의 밝고 쨍한 컬러가 잘 어울려요.",
@@ -26,16 +29,16 @@ SEASON_PALETTE = {
 DEFAULT_PALETTE = "https://cdn.jsdelivr.net/gh/thesimplegithub/mycolor-hosting/images/pccsMain.png"
 
 CELEB = {
-    "봄 라이트": {"여자": ("윤아", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTM1/MDAxNzYyNDM5MzA3NDI1.T2rxWI6y8G0KOX-pdK4BcAXgCEUl-2UUOHU9WVgtZCMg.uI3ecF_zdMm_guc5BmRIwcZldTBYdPBzu3u5rqqj2J8g.JPEG/IMG％EF％BC％BF1192.JPG?type=w966"), "남자": ("이종석", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNzUg/MDAxNzYyNDM5MzA4MzU2.sgx5YYgOJeH6tIQ-dfmq6Zt-u_LoLhWvFeNpUvvnHhEg.3Mwa48B-biz1QudsFRHSsLPkcuXJJIkbHWwf-aYegiAg.JPEG/IMG％EF％BC％BF1225.JPG?type=w966")},
-    "봄 브라이트": {"여자": ("나연", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjAz/MDAxNzYyNDM5MzA3Nzk1.gmEqXNzB37B2wBTgrVx4w6JDMlcaCNtqIFSnr5T8UCwg.VjDPhKIS95U1AB33R8KfuleDxyRQ_ZB9CZefvdTNSpsg.JPEG/IMG％EF％BC％BF1206.JPG?type=w966"), "남자": ("강다니엘", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjY1/MDAxNzYyNDM5MzA4MjU3.f0OZ-_VnhEI33cm0IcEuUITdmX6X8HORMrUzWCv1d7Ug.8iSY5eGRrAfNUEhvH0KehClXPBPUKeKnZEF79olvxNYg.JPEG/IMG％EF％BC％BF1227.JPG?type=w966")},
-    "여름 라이트": {"여자": ("장원영", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjc1/MDAxNzYyNDM5MzA4MTQ5.ewVz5OQExgMd60ij3x5v1IJTSFIpA9syFeb7_hi3I1kg.ZV73W-Lvr8U2bh-C31jX_kZjdKvcrkNGkw9bhsDHesgg.JPEG/IMG％EF％BC％BF1222.JPG?type=w966"), "남자": ("정해인", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNTMg/MDAxNzYyNDM5MzA3Nzgz.GO7RDL060ifLkDNT0xixz1kD9tHebrfG1ONvQhfmU8sg.321vBWpCBZuZGURaIJM69c0KWgwYMGBsPSuHsNbgaYcg.JPEG/IMG％EF％BC％BF1230.JPG?type=w966")},
-    "여름 브라이트": {"여자": ("은하", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTc1/MDAxNzYyNDM5MzA4OTk3.XyRCgDMBrhObmZydV-7E8XWWBytUp7_7ta2l3XREYOUg.MrkWtbrcCdX0wZ3g-xKerOWoAVDJot8wEe3j7E45T_Mg.JPEG/IMG％EF％BC％BF1224.JPG?type=w966"), "남자": ("뷔", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTYz/MDAxNzYyNDM5MzA4NDE1.NA54xC6oQosEfDWvfgmvnltIvdpYa_Z9klksZELld6wg.J262fp66ywuKByMfaaYNFqFPSZKQu89N0QSEA8GuLuog.JPEG/IMG％EF％BC％BF1236.JPG?type=w966")},
-    "여름 뮤트": {"여자": ("문채원", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjgg/MDAxNzYyNDM5MzA3NDg0.YIstb7sU0wswDpygeoQIMwVh9vVkMuhrI41ndLMqPkIg.HHcvHaCoKnMGbQ7irGsYEe6PEtDV5ye2Nc53GC5a5Iwg.JPEG/IMG％EF％BC％BF1198.JPG?type=w966"), "남자": ("송강", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjYw/MDAxNzYyNDM5MzA4OTIz.vBmWxVKj7Dco3PTkrigIXG3R2N_Dj-4QVpQtFiE_-q4g.GVzu4Lw-QZTCjKe_GHcupZ6TEmKAPRkXN0ihWi1kBPMg.JPEG/IMG％EF％BC％BF1201.JPG?type=w966")},
-    "가을 뮤트": {"여자": ("제니", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfODYg/MDAxNzYyNDM5MzA3OTA1.NLvRSbc3iZzDH_aKTbQfBBovpza2OvEFEOgZcXubatwg.Kfs2Empot5CsxTb_nCOJz4_VWHB53mDVkfRTtvFqBB8g.JPEG/IMG％EF％BC％BF1221.JPG?type=w966"), "남자": ("서강준", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNDYg/MDAxNzYyNDM5MzA3NDQ6.EVmfObIqUCqbIgkLv0mcIHQsTIljnLb2gdRXGitKdnog.FeE4c0NscxPFePQ4Qhj6LUGsvQPE6y2TrkX8Qc3HThIg.JPEG/IMG％EF％BC％BF1237.JPG?type=w966")},
-    "가을 스트롱": {"여자": ("조이", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjE1/MDAxNzYyNDM5MzA8NTE2.AGNHRbZMl93a6NwjTt76N9EBBZ8rzVZTEbt3mn5-BRYg.CCSBsMGuO3E4BfInjwoNWn6fAl85PhNn-kWRgPC6p1Qg.JPEG/output％EF％BC％BF3817396647.jpg?type=w966"), "남자": ("강태오", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjY6/MDAxNzYyNDM5MzA7NDg7.nM3UvJAe4uPo3Pc1HT40vYbzRk7cCefKLFUZRpBjOHcg.22tuUdmI-mklIm793R8Sw0smpnqebyt5QgHzu0kUK0Eg.JPEG/output％EF％BC％BF2543490798.jpg?type=w966")},
-    "가을 딥": {"여자": ("김유정", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNiAg/MDAxNzYyNDM5MzA8OTg6.SLp61r-OMfbkn0euIMLhk2o2ZYGANT9fKoHE2S5B6lAg.umJC53HxGvx0kDdsZEL6jeZD5gLfuWPy9A3ce9tgIfAg.JPEG/IMG％EF％BC％BF1212.JPG?type=w966"), "남자": ("공유", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTU1/MDAxNzYyNDM5MzA8Nzk8.xN33tfvJjPbOHU13TZhzBf8FM0G1yCLp2oFSSHGyqZAg.3mlA7xcK21r6p7rdfl1UXf1fr_8nkjVi0h6rzeaGvH0g.JPEG/IMG％EF％BC％BF1238.JPG?type=w966")},
-    "겨울 브라이트": {"여자": ("카리나", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjkg/MDAxNzYyNDM5MzA7N7I0.vmX-1402X4TAKcSD1DtyrGBqAbFDBsYS5GottDNPMj0g.xsjf_Hcyax48NNMp_VhE10ICNjCLPbcDMK3GFSIYroUg.JPEG/IMG％EF％BC％BF1217.JPG?type=w966"), "남자": ("조정석", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTY6/MDAxNzYyNDM5MzA5MTI4.-ohQnzHZ8xK8fnjgWQU1wg9Yxcr0tJwxy6CrV10Hpl4g.wmGPYOHyE-c7Fgh60uye6fuSujLGUcQ4BSMQJRR7PP0g.JPEG/IMG％EF％BC％BF1244.JPG?type=w966")},
-    "겨울 딥": {"여자": ("지수", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTIz/MDAxNzYyNDM5MzA4OTM4.3sc7OS-eHnjtSQ-8JRgjVFVDxzGihBNxhKqgZtZifdcg.sG6vJqOREgXxvXQeD7Acb9LEzxSYM98r7PoElLlgQpUg.JPEG/IMG％EF％BC％BF1209.JPG?type=w966"), "남자": ("이수혁", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjc0/MDAxNzYyNDM5MzA8ODM7._qzsWliOJ9QxBy8Co8KdQOwR6oj8l7ePdot8o99kx2gg.jvtnAbBjBxUajgXjAQSJkNqinB8Eibdfu5DMcTdAt4cg.JPEG/IMG％EF％BC％BF1231.JPG?type=w966")},
+    "봄 라이트": {"여자": ("윤아", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTM1/MDAxNzYyNDM5MzA3NDI1.T2rxWI6y8G0KOX-pdK4BcAXgCEUl-2UUOHU9WVgtZCMg.uI3ecF_zdMm_guc5BmRIwcZldTBYdPBzu3u5rqqj2J8g.JPEG/IMG%EF%BC%BF1192.JPG?type=w966"), "남자": ("이종석", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNzUg/MDAxNzYyNDM5MzA4MzU2.sgx5YYgOJeH6tIQ-dfmq6Zt-u_LoLhWvFeNpUvvnHhEg.3Mwa48B-biz1QudsFRHSsLPkcuXJJIkbHWwf-aYegiAg.JPEG/IMG%EF%BC%BF1225.JPG?type=w966")},
+    "봄 브라이트": {"여자": ("나연", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjAz/MDAxNzYyNDM5MzA3Nzk1.gmEqXNzB37B2wBTgrVx4w6JDMlcaCNtqIFSnr5T8UCwg.VjDPhKIS95U1AB33R8KfuleDxyRQ_ZB9CZefvdTNSpsg.JPEG/IMG%EF%BC%BF1206.JPG?type=w966"), "남자": ("강다니엘", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjY1/MDAxNzYyNDM5MzA4MjU3.f0OZ-_VnhEI33cm0IcEuUITdmX6X8HORMrUzWCv1d7Ug.8iSY5eGRrAfNUEhvH0KehClXPBPUKeKnZEF79olvxNYg.JPEG/IMG%EF%BC%BF1227.JPG?type=w966")},
+    "여름 라이트": {"여자": ("장원영", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjc1/MDAxNzYyNDM5MzA4MTQ5.ewVz5OQExgMd60ij3x5v1IJTSFIpA9syFeb7_hi3I1kg.ZV73W-Lvr8U2bh-C31jX_kZjdKvcrkNGkw9bhsDHesgg.JPEG/IMG%EF%BC%BF1222.JPG?type=w966"), "남자": ("정해인", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNTMg/MDAxNzYyNDM5MzA3Nzgz.GO7RDL060ifLkDNT0xixz1kD9tHebrfG1ONvQhfmU8sg.321vBWpCBZuZGURaIJM69c0KWgwYMGBsPSuHsNbgaYcg.JPEG/IMG%EF%BC%BF1230.JPG?type=w966")},
+    "여름 브라이트": {"여자": ("은하", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTc1/MDAxNzYyNDM5MzA4OTk3.XyRCgDMBrhObmZydV-7E8XWWBytUp7_7ta2l3XREYOUg.MrkWtbrcCdX0wZ3g-xKerOWoAVDJot8wEe3j7E45T_Mg.JPEG/IMG%EF%BC%BF1224.JPG?type=w966"), "남자": ("뷔", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTYz/MDAxNzYyNDM5MzA4NDE1.NA54xC6oQosEfDWvfgmvnltIvdpYa_Z9klksZELld6wg.J262fp66ywuKByMfaaYNFqFPSZKQu89N0QSEA8GuLuog.JPEG/IMG%EF%BC%BF1236.JPG?type=w966")},
+    "여름 뮤트": {"여자": ("문채원", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjgg/MDAxNzYyNDM5MzA3NDg0.YIstb7sU0wswDpygeoQIMwVh9vVkMuhrI41ndLMqPkIg.HHcvHaCoKnMGbQ7irGsYEe6PEtDV5ye2Nc53GC5a5Iwg.JPEG/IMG%EF%BC%BF1198.JPG?type=w966"), "남자": ("송강", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjYw/MDAxNzYyNDM5MzA4OTIz.vBmWxVKj7Dco3PTkrigIXG3R2N_Dj-4QVpQtFiE_-q4g.GVzu4Lw-QZTCjKe_GHcupZ6TEmKAPRkXN0ihWi1kBPMg.JPEG/IMG%EF%BC%BF1201.JPG?type=w966")},
+    "가을 뮤트": {"여자": ("제니", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfODYg/MDAxNzYyNDM5MzA3OTA1.NLvRSbc3iZzDH_aKTbQfBBovpza2OvEFEOgZcXubatwg.Kfs2Empot5CsxTb_nCOJz4_VWHB53mDVkfRTtvFqBB8g.JPEG/IMG%EF%BC%BF1221.JPG?type=w966"), "남자": ("서강준", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNDYg/MDAxNzYyNDM5MzA3NDQ6.EVmfObIqUCqbIgkLv0mcIHQsTIljnLb2gdRXGitKdnog.FeE4c0NscxPFePQ4Qhj6LUGsvQPE6y2TrkX8Qc3HThIg.JPEG/IMG%EF%BC%BF1237.JPG?type=w966")},
+    "가을 스트롱": {"여자": ("조이", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjE1/MDAxNzYyNDM5MzA8NTE2.AGNHRbZMl93a6NwjTt76N9EBBZ8rzVZTEbt3mn5-BRYg.CCSBsMGuO3E4BfInjwoNWn6fAl85PhNn-kWRgPC6p1Qg.JPEG/output%EF%BC%BF3817396647.jpg?type=w966"), "남자": ("강태오", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjY6/MDAxNzYyNDM5MzA7NDg7.nM3UvJAe4uPo3Pc1HT40vYbzRk7cCefKLFUZRpBjOHcg.22tuUdmI-mklIm793R8Sw0smpnqebyt5QgHzu0kUK0Eg.JPEG/output%EF%BC%BF2543490798.jpg?type=w966")},
+    "가을 딥": {"여자": ("김유정", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfNiAg/MDAxNzYyNDM5MzA8OTg6.SLp61r-OMfbkn0euIMLhk2o2ZYGANT9fKoHE2S5B6lAg.umJC53HxGvx0kDdsZEL6jeZD5gLfuWPy9A3ce9tgIfAg.JPEG/IMG%EF%BC%BF1212.JPG?type=w966"), "남자": ("공유", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTU1/MDAxNzYyNDM5MzA8Nzk8.xN33tfvJjPbOHU13TZhzBf8FM0G1yCLp2oFSSHGyqZAg.3mlA7xcK21r6p7rdfl1UXf1fr_8nkjVi0h6rzeaGvH0g.JPEG/IMG%EF%BC%BF1238.JPG?type=w966")},
+    "겨울 브라이트": {"여자": ("카리나", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjkg/MDAxNzYyNDM5MzA7N7I0.vmX-1402X4TAKcSD1DtyrGBqAbFDBsYS5GottDNPMj0g.xsjf_Hcyax48NNMp_VhE10ICNjCLPbcDMK3GFSIYroUg.JPEG/IMG%EF%BC%BF1217.JPG?type=w966"), "남자": ("조정석", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTY6/MDAxNzYyNDM5MzA5MTI4.-ohQnzHZ8xK8fnjgWQU1wg9Yxcr0tJwxy6CrV10Hpl4g.wmGPYOHyE-c7Fgh60uye6fuSujLGUcQ4BSMQJRR7PP0g.JPEG/IMG%EF%BC%BF1244.JPG?type=w966")},
+    "겨울 딥": {"여자": ("지수", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMTIz/MDAxNzYyNDM5MzA4OTM4.3sc7OS-eHnjtSQ-8JRgjVFVDxzGihBNxhKqgZtZifdcg.sG6vJqOREgXxvXQeD7Acb9LEzxSYM98r7PoElLlgQpUg.JPEG/IMG%EF%BC%BF1209.JPG?type=w966"), "남자": ("이수혁", "https://mblogthumb-phinf.pstatic.net/MjAyNTExMDZfMjc0/MDAxNzYyNDM5MzA8ODM7._qzsWliOJ9QxBy8Co8KdQOwR6oj8l7ePdot8o99kx2gg.jvtnAbBjBxUajgXjAQSJkNqinB8Eibdfu5DMcTdAt4cg.JPEG/IMG%EF%BC%BF1231.JPG?type=w966")},
 }
 
 BEST_COLORS = {
@@ -64,7 +67,9 @@ WORST_COLORS = {
     "겨울 딥": [(255, 235, 205), (255, 240, 220), (200, 180, 150)],
 }
 
-# [NEW] 캐릭터 매칭 데이터 (작동 확인된 URL 위주)
+# ==========================================================
+# 2. 캐릭터 매칭 데이터 (기존 데이터 유지)
+# ==========================================================
 TEMP_IMG = "https://via.placeholder.com/300?text=Image+Coming+Soon"
 
 KIDS_CHARACTERS = {
@@ -98,3 +103,62 @@ KIDS_CHARACTERS = {
         "차은우": {"img": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Cha_Eun-woo_in_2024.jpg/220px-Cha_Eun-woo_in_2024.jpg", "reason": "조각 같은 이목구비가 얼굴 천재 차은우를 연상시켜요! ✨"}
     }
 }
+
+# ==========================================================
+# 3. [NEW] 이미지 결과 처리 서비스 클래스 (타요 필터링 로직 포함)
+# ==========================================================
+
+class ImageFilterService:
+    """
+    이미지 분석 결과를 처리하고 필터링하는 서비스 클래스입니다.
+    객체지향적 설계를 통해 관리와 수정이 용이하도록 구성했습니다.
+    """
+
+    # [관리 포인트] 단독으로 보여주고 싶은 캐릭터 키워드 리스트
+    # 나중에 다른 캐릭터를 추가하고 싶으면 여기에 콤마(,)로 구분해 추가하면 됩니다.
+    SPECIAL_CHARACTERS = ["Tayo", "타요", "The Little Bus", "Little Bus Tayo"]
+
+    def process_results(self, results):
+        """
+        API 결과를 받아 비즈니스 로직(타요 필터링 등)을 수행합니다.
+        
+        :param results: [{'description': 'Tayo', 'score': 0.95}, ...] 형태의 리스트
+        :return: 필터링된 결과 리스트
+        """
+        if not results:
+            return []
+
+        # 1. 점수(score) 기준 내림차순 정렬 (유사도가 높은 순서대로)
+        # 데이터에 'score' 키가 없으면 에러 방지를 위해 0으로 처리
+        sorted_results = sorted(results, key=lambda x: x.get('score', 0), reverse=True)
+        
+        # 가장 유사도가 높은 1순위 결과 가져오기
+        top_match = sorted_results[0]
+        
+        # Google Vision 결과는 보통 'description'이나 'label'에 이름이 들어감
+        # 안전하게 가져오기 위해 get 사용
+        top_name = top_match.get('description') or top_match.get('name') or top_match.get('label') or ""
+
+        # [수정 핵심 로직]: 1순위가 타겟 캐릭터(타요)인지 확인
+        if self._is_target_character(top_name):
+            # 타요가 맞다면 -> 리스트에 타요(1순위) 하나만 남기고 나머지 제거
+            return [top_match]
+        
+        # 타요가 아니라면 -> 원래 리스트(정렬됨) 전체 반환
+        return sorted_results
+
+    def _is_target_character(self, name):
+        """
+        이름이 특별 키워드 리스트에 포함되는지 확인하는 내부 메서드
+        """
+        if not name:
+            return False
+        
+        # 대소문자 구분 없이 키워드가 포함되어 있는지 확인
+        # 예: "tayo" in "The Little Bus Tayo" -> True
+        return any(keyword.lower() in name.lower() for keyword in self.SPECIAL_CHARACTERS)
+
+# ---------------------------------------------------------
+# [사용 편의성] 외부에서 바로 사용할 수 있도록 객체 생성
+# ---------------------------------------------------------
+image_filter = ImageFilterService()
