@@ -26,9 +26,10 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 # 2. 로직/데이터 연결
 try:
     import logic as utils 
+    # [수정] image_filter 추가됨!
     from data.definitions import (
         SEASON_PALETTE, TONE_INFO, KIDS_CHARACTERS, DEFAULT_PALETTE, 
-        CELEB, BEST_COLORS, WORST_COLORS
+        CELEB, BEST_COLORS, WORST_COLORS, image_filter
     )
 except ImportError:
     st.error("필수 파일(logic.py 또는 data/definitions.py)이 없습니다.")
@@ -251,6 +252,26 @@ def page_kids_fun():
                     keywords = api_result.get("keywords", [])
                     images = api_result.get("images", [])
                     
+                    # -------------------------------------------------------------
+                    # [필터링 로직 추가] 타요가 나오면 다른 사진 제거!
+                    # -------------------------------------------------------------
+                    if keywords:
+                         # 1등 키워드를 필터에 넣어봅니다. (점수는 임의로 1.0 부여)
+                         dummy_data = [{'name': k, 'score': 1.0 - (i*0.1)} for i, k in enumerate(keywords)]
+                         
+                         # image_filter가 작동하여 타요만 남기면 리스트 길이가 1이 됨
+                         filtered_res = image_filter.process_results(dummy_data)
+                         
+                         if len(filtered_res) == 1:
+                             target_name = filtered_res[0]['name']
+                             st.success(f"🚌 **{target_name}** 발견! 관련 없는 이미지는 자동으로 숨깁니다.")
+                             
+                             # 키워드도 타요만 남기고, 이미지도 1등(타요)만 남김
+                             keywords = [target_name]
+                             if images:
+                                 images = [images[0]]
+                    # -------------------------------------------------------------
+
                     st.success("✅ 분석 완료!")
                     
                     st.subheader("🏷️ AI가 찾은 키워드")
