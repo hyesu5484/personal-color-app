@@ -1,0 +1,307 @@
+import streamlit as st
+import time
+import os
+import io
+import random
+
+# [닌자 모드] 앱 시작 시 무거운 라이브러리 절대 로딩 금지
+
+# 1. 페이지 설정
+st.set_page_config(page_title="퍼스널 컬러 & 체형 분석", layout="centered")
+
+# UI 깔끔하게
+hide_st_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    [data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] div:first-child {display: none;}
+    [data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"]::before {
+        content: "사진을 여기로 끌어다 놓거나 파일 선택을 눌러주세요";
+        display: block; text-align: center; font-weight: 500; margin-bottom: 0.25rem;
+    }
+    </style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
+# 2. 로직/데이터 연결 (수정된 부분!)
+try:
+    import logic as utils 
+    # [수정] data.definitions 가 아니라 그냥 definitions 에서 가져옵니다.
+    from definitions import (
+        SEASON_PALETTE, TONE_INFO, KIDS_CHARACTERS, DEFAULT_PALETTE, 
+        CELEB, BEST_COLORS, WORST_COLORS
+    )
+except ImportError:
+    st.error("필수 파일(logic.py 또는 definitions.py)이 없습니다.")
+    st.stop()
+
+# 3. 페이지 이동 관리
+if 'page' not in st.session_state: st.session_state['page'] = 'home'
+def go_page(p): st.session_state['page'] = p
+def go_home(): st.session_state['page'] = 'home'
+
+# --- [1] 퍼스널 컬러 페이지 ---
+def page_personal_color():
+    st.markdown("<h1>퍼스널 컬러 찾기</h1>", unsafe_allow_html=True)
+    st.subheader("기본 정보 입력")
+    
+    import cv2
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFont
+    import requests 
+
+    col1, col2 = st.columns(2)
+    with col1:
+        name = st.text_input("이름", key="pc_n")
+        years = ["선택"] + [f"{y}년생" for y in range(2025, 1930, -1)]
+        birth_year = st.selectbox("출생연도", years, index=0, key="pc_y")
+        gender = st.radio("성별", ["여자", "남자"], key="pc_g")
+    with col2:
+        height = st.number_input("키(cm)", min_value=0, max_value=250, value=0, key="pc_h")
+        weight = st.number_input("몸무게(kg)", min_value=0, max_value=200, value=0, key="pc_w")
+
+    st.divider()
+    st.subheader("사진 업로드")
+    st.markdown("※ 메이크업 없는 정면 사진을 업로드해주세요. (필터 X, 기본 카메라 O)")
+    file = st.file_uploader("사진 업로드", type=["jpg", "jpeg", "png"], key="pc_f")
+    
+    if not file:
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.button("🏠 홈으로 돌아가기", on_click=go_home)
+        return
+
+    # --- 분석 시작 ---
+    display_name = name if name else "사용자"
+
+    # 로딩 애니메이션
+    loading_container = st.container()
+    with loading_container:
+        st.info(f"🔄 **{display_name}**님의 퍼스널 컬러를 분석 중입니다...")
+        progress_bar = st.progress(0)
+        for i in range(50):
+            time.sleep(0.02)
+            progress_bar.progress(i * 2 + 1)
+
+    # 이미지 처리
+    img = Image.open(file)
+    img = utils.fix_image_orientation(img)
+    img = img.convert("RGB")
+    rgb = np.array(img)
+
+    # 얼굴 검출
+    cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+    faces = cascade.detectMultiScale(gray, 1.2, 5)
+
+    if len(faces) > 0:
+        x, y, w, h = faces[0]
+        rx1, rx2 = int(y + h*0.25), int(y + h*0.85)
+        cx1, cx2 = int(x + w*0.25), int(x + w*0.75)
+        face_region = rgb[rx1:rx2, cx1:cx2]
+        
+        show_img = rgb.copy()
+        cv2.rectangle(show_img, (cx1, rx1), (cx2, rx2), (0,255,0), 3)
+        st.image(show_img, caption="분석된 얼굴 영역", use_column_width=True)
+    else:
+        face_region = rgb
+        st.image(img, caption="분석된 얼굴 영역 (전체 분석)", use_column_width=True)
+
+    # 분석 및 결과
+    hsv = cv2.cvtColor(face_region, cv2.COLOR_RGB2HSV)
+    h_mean = utils.circular_mean_hue(hsv[:,:,0].astype(float) * 2)
+    s_mean = float(np.mean(hsv[:,:,1]/255))
+    v_mean = float(np.mean(hsv[:,:,2]/255))
+    
+    result_tone = utils.map_to_pccs_10(h_mean, s_mean, v_mean)
+    season = utils.tone_to_season(result_tone)
+    season_palette = SEASON_PALETTE.get(season, DEFAULT_PALETTE)
+
+    loading_container.empty()
+    st.success(f"✅ **{display_name}**님의 퍼스널 컬러 분석이 완료되었습니다.")
+
+    utils.save_result("personal_color", name, birth_year, gender, height, weight, result_tone)
+
+    # 화면 출력
+    st.image(season_palette, caption=f"{season} 팔레트", use_column_width=True)
+
+    st.success(f"{display_name}님의 퍼스널 컬러는 **{result_tone}** 입니다.")
+    st.write(f"Hue 평균: {round(h_mean)}°, 채도(S): {s_mean:.2f}, 명도(V): {v_mean:.2f}")
+    st.write(TONE_INFO.get(result_tone, ""))
+
+    celeb_name = "정보 없음"
+    celeb_url = ""
+    if result_tone in CELEB and gender in CELEB[result_tone]:
+        celeb_name, celeb_url = CELEB[result_tone][gender]
+        st.subheader(f"대표 연예인: {celeb_name}")
+        st.image(celeb_url, width=300)
+
+    # 베스트/워스트 표시
+    st.subheader("Best / Worst Colors")
+    col_b, col_w = st.columns(2)
+    with col_b:
+        st.write("**Best**")
+        if result_tone in BEST_COLORS:
+            st.image(utils.draw_color_boxes(BEST_COLORS[result_tone], "Best"))
+    with col_w:
+        st.write("**Worst**")
+        if result_tone in WORST_COLORS:
+            st.image(utils.draw_color_boxes(WORST_COLORS[result_tone], "Worst"))
+
+    # 결과 카드 생성 (한글 폰트 처리)
+    def create_result_card():
+        card = Image.new("RGB", (1200, 800), (255, 255, 255))
+        draw = ImageDraw.Draw(card)
+        try:
+            # 서버에는 맑은고딕이 없을 수 있으므로 기본 폰트 처리 (에러 방지)
+            font_title = ImageFont.load_default()
+            font_text = ImageFont.load_default()
+        except: pass
+
+        draw.text((50, 50), f"{display_name}'s Personal Color", fill="black", font=font_title)
+        draw.text((50, 150), f"Result: {result_tone}", fill="black", font=font_title)
+        draw.text((50, 230), f"Season: {season}", fill="gray", font=font_text)
+
+        draw.text((50, 320), "BEST COLORS", fill="green", font=font_text)
+        if result_tone in BEST_COLORS:
+            best_img = utils.draw_color_boxes(BEST_COLORS[result_tone], "Best")
+            card.paste(best_img, (50, 370))
+        
+        draw.text((50, 470), "WORST COLORS", fill="darkred", font=font_text)
+        if result_tone in WORST_COLORS:
+            worst_img = utils.draw_color_boxes(WORST_COLORS[result_tone], "Worst")
+            card.paste(worst_img, (50, 520))
+
+        if celeb_url:
+            try:
+                c_res = requests.get(celeb_url, timeout=3)
+                celeb = Image.open(io.BytesIO(c_res.content)).resize((400, 500))
+                card.paste(celeb, (750, 150))
+                draw.text((750, 670), f"Celeb: {celeb_name}", fill="black", font=font_text)
+            except: pass
+        return card
+
+    st.subheader("🔗 결과 저장")
+    with st.spinner("결과 카드 생성 중..."):
+        try:
+            final_card = create_result_card()
+            buf = io.BytesIO()
+            final_card.save(buf, format="PNG")
+            st.download_button(
+                "🖼 결과 이미지 다운로드",
+                buf.getvalue(),
+                file_name="personal_color_result.png",
+                mime="image/png"
+            )
+        except Exception as e:
+            st.warning(f"이미지 생성 중 오류: {e}")
+            
+    st.divider()
+    st.button("🏠 홈으로 돌아가기", on_click=go_home, use_container_width=True)
+
+# --- [2] 체형 분석 페이지 ---
+def page_body_shape():
+    st.subheader("체형 분석")
+    st.markdown("※ 전신이 나오도록 촬영한 사진을 업로드해주세요.")
+    
+    import numpy as np
+    from PIL import Image
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        name = st.text_input("이름", key="bs_n")
+        gender = st.radio("성별", ["여자", "남자"], key="bs_g")
+    with c2:
+        height = st.number_input("키(cm)", key="bs_h")
+        weight = st.number_input("몸무게(kg)", key="bs_w")
+
+    file = st.file_uploader("전신 사진 업로드", type=["jpg", "png"], key="bs_f")
+    
+    if file:
+        img = Image.open(file)
+        img = utils.fix_image_orientation(img)
+        st.image(img, caption="업로드한 전신 사진", use_column_width=True)
+        
+        if st.button("분석하기", type="primary"):
+            rgb = np.array(img.convert("RGB"))
+            body_comment = utils.analyze_body_shape(rgb)
+            st.success("체형 분석 결과")
+            st.write(body_comment)
+            utils.save_result("body_shape", name, "", gender, height, weight, body_comment)
+        
+    st.divider()
+    st.button("🏠 홈으로 돌아가기", on_click=go_home)
+
+# --- [3] 캐릭터 매칭 페이지 ---
+def page_kids_fun():
+    st.subheader("얼굴 캐릭터 매칭")
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        name = st.text_input("이름", key="kf_n")
+        gender = st.radio("성별", ["여자", "남자"], key="kf_g")
+    with c2:
+        target_type = st.selectbox("어떤 느낌?", list(KIDS_CHARACTERS.keys()))
+
+    file = st.file_uploader("얼굴 사진 업로드", type=["jpg", "png"], key="kf_f")
+    
+    if file:
+        st.image(file, width=300)
+        if st.button("매칭하기", type="primary"):
+            picked = random.choice(KIDS_CHARACTERS[target_type])
+            st.success(f"추천 매칭 결과: **{picked}** 와(과) 비슷한 분위기예요! 🎉")
+            utils.save_result("kids_fun", name, "", gender, 0, 0, picked)
+        
+    st.divider()
+    st.button("🏠 홈으로 돌아가기", on_click=go_home)
+
+# --- [4] 관리자 페이지 ---
+def page_admin():
+    st.button("🏠 홈으로", on_click=go_home)
+    st.subheader("관리자 모드 – 사용자 결과 관리")
+    
+    pw = st.text_input("관리자 비밀번호를 입력하세요", type="password")
+    
+    if pw == "0910":
+        st.success("인증되었습니다! 데이터를 불러옵니다.")
+        import pandas as pd
+        df = utils.get_results_df()
+        
+        if len(df) > 0:
+            st.write(f"총 {len(df)}개 결과")
+            st.dataframe(df)
+            st.download_button("📥 전체 CSV 다운로드", df.to_csv(index=False).encode('utf-8'), "user_results.csv", "text/csv")
+            
+            st.divider()
+            st.subheader("📊 통계")
+            col1, col2 = st.columns(2)
+            col1.bar_chart(df['service'].value_counts())
+            pc_df = df[df['service'] == 'personal_color']
+            if not pc_df.empty:
+                col2.bar_chart(pc_df['result'].value_counts())
+        else:
+            st.info("결과 데이터가 비어 있습니다.")
+    elif pw:
+        st.error("비밀번호가 틀렸습니다.")
+
+# --- 메인 실행 ---
+if st.session_state['page'] == 'home':
+    st.title("✨ AI 퍼스널 브랜딩")
+    st.write("서비스를 선택하세요")
+    st.divider()
+    
+    c1, c2, c3 = st.columns(3)
+    with c1: 
+        if st.button("① 퍼스널 컬러", use_container_width=True): go_page("pc")
+    with c2: 
+        if st.button("② 체형 분석", use_container_width=True): go_page("bs")
+    with c3: 
+        if st.button("③ 캐릭터 매칭", use_container_width=True): go_page("kf")
+    
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    with st.expander("🔒 관리자 접속"):
+        if st.button("관리자 페이지 이동"): go_page("admin")
+
+elif st.session_state['page'] == 'pc': page_personal_color()
+elif st.session_state['page'] == 'bs': page_body_shape()
+elif st.session_state['page'] == 'kf': page_kids_fun()
+elif st.session_state['page'] == 'admin': page_admin()
