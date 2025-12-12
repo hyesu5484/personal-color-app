@@ -23,16 +23,16 @@ hide_st_style = """
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# 2. 로직/데이터 연결 (수정된 부분!)
+# 2. 로직/데이터 연결
 try:
     import logic as utils 
-    # [수정] data.definitions 가 아니라 그냥 definitions 에서 가져옵니다.
-    from definitions import (
+    # [수정됨] 폴더가 생겼으니 다시 'data.'을 붙여야 합니다!
+    from data.definitions import (
         SEASON_PALETTE, TONE_INFO, KIDS_CHARACTERS, DEFAULT_PALETTE, 
         CELEB, BEST_COLORS, WORST_COLORS
     )
 except ImportError:
-    st.error("필수 파일(logic.py 또는 definitions.py)이 없습니다.")
+    st.error("필수 파일(logic.py 또는 data/definitions.py)이 없습니다.")
     st.stop()
 
 # 3. 페이지 이동 관리
